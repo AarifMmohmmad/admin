@@ -1,0 +1,143 @@
+<%- include('header') %>
+
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                <%= title %>
+            </h1>
+        </section>
+        <section class="content container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box">
+                        <div class="box-body table-responsive">
+                            <div class="pull-right" style="margin-top: 32px; display: flex;">
+                                <input type="text" id="search" class="form-control" placeholder="nickname"
+                                    style="width: 150px; height: 33px; margin-left: 10px;" />
+                            </div>
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Player ID</th>
+                                        <th>Facebook Id</th>
+                                        <th>Guest User</th>
+                                        <th>Game Played</th>
+                                        <th>Table Chips</th>
+                                        <th>Bank</th>
+                                        <th>Reg Date</th>
+                                        <th>Action</th>
+                                        <th>Transactions</th> <!-- New column header -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% data.forEach(function(d) { %>
+                                        <tr>
+                                            <td>
+                                                <%= d.referral_code %>
+                                            </td>
+                                            <td>
+                                                <%= d.username || '' %>
+                                            </td>
+                                            <td>
+                                                <% if (d.is_guest) { %>
+                                                    <span class="label label-success">True</span>
+                                                    <% } else { %>
+                                                        <span class="label label-danger">False</span>
+                                                        <% } %>
+                                            </td>
+                                            <td>
+                                                <%= d.game_played %>
+                                            </td>
+                                            <td>
+                                                <%= d.wallet %>
+                                            </td>
+                                            <td>
+                                                <%= d.bank %>
+                                            </td>
+                                            <td>
+                                                <%= d.created_at %>
+                                            </td>
+                                            <td class="actions text-center">
+                                                <a href="<%= host %>/user/view/<%= d.id %>" target="_blank"
+                                                    class="on-editing save-row">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                            </td>
+                                            <td class="text-center"> <!-- New column for Transaction button -->
+                                                <a href="<%= host %>/user/transaction/<%= d.id %>" target="_blank"
+                                                    class="on-editing save-row">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                </tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <%- include('footer') %>
+
+        <script>
+            $(document).ready(function () {
+                let name;
+                $('#search').on('keyup', function () {
+                    name = $(this).val();
+                    console.log(name)
+                    table.ajax.reload();
+                });
+
+                var table = $('#example1').DataTable({
+                    destroy: true,
+                    dom: 'lBfrtip',
+                    lengthMenu: [
+                        [ 10, 25, 100, 500 ],
+                        [ 10, 25, 100, 500 ]
+                    ],
+                    searching: true,
+                    "language": {
+                        "searchPlaceholder": "Referral Code",
+                    },
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            text: '<span class="fa fa-file-excel-o"></span> Excel Export',
+                            exportOptions: {
+                                modifier: { search: 'applied', order: 'applied' }
+                            }
+                        },
+                        {
+                            extend: 'pdf',
+                            text: '<span class="fa fa-file-pdf-o"></span> PDF Export',
+                            exportOptions: {
+                                modifier: { search: 'applied', order: 'applied' }
+                            }
+                        }
+                    ],
+                    responsive: true,
+                    processing: true,
+                    serverSide: true,
+                    // ajax: '/users_ajax',
+                    "ajax": {
+                        'url': '/admin/users_ajax',
+                        data: function (params) {
+                            params.name = name;
+                        }
+                    },
+                    deferLoading: '<%= total %>',
+                    aaSorting: [],
+                    sortField: 5,
+                    sortOrder: '-1',
+                    columnDefs: [
+                        { orderable: true, targets: [ 0, 6, 3, 4,5,8 ] },
+                        { orderable: false, targets: [ 1, 2, 7 ] }
+                    ]
+                });
+            });
+        </script>

@@ -1,0 +1,140 @@
+<%- include('header') %>
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1><%= title %></h1>
+    </section>
+    <section class="content container-fluid">
+        <div class="row">
+            <div class="pull-right" style="display: flex; margin-right: 10px;">
+                <select class="col select-status" name="status" style="width:152px; height: 34px;">
+                    <option></option>
+                    <option value="All">All</option>
+                    <option value="D">Debit</option>
+                    <option value="C">Credit</option>
+                </select>
+                <input type="text" class="col select-date" onfocus="(this.type='date')" onblur="(this.type='text')"  placeholder="From Date" id="startdatepicker" name="StartDate" style="width: 152px; height: 34px; border-radius: 4px; border: 1px solid gray; border: 1px solid gray;">
+            <input type="hidden" name="" id="userid" value="<%= id %>">
+                <input type="text" class="col select-date" onfocus="(this.type='date')" onblur="(this.type='text')" placeholder="To Date" id="enddatepicker" name="EndDate" style="width: 152px; height: 34px; border-radius: 4px; border: 1px solid gray;">
+                </div>
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-body table-responsive">
+                        <table id="example1" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Referral code</th>
+                                    <th>Type</th>
+                                    <th style="width: 150px">Date</th>
+                                    <th>Before balance</th>
+                                    <th>Txn Amount</th>
+                                    <th>Current Balance</th>
+                                    <th>Massage</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% data.forEach(function(d) { %>
+                                    <tr>
+                                        <td><%= d.referral_code %></td>
+                                        <td><%= d.referral_code %></td>
+                                        <td><%= d.date %></td>
+                                        <td><%= d.signupBonus %></td>
+                                        <td><%= d.spinBonus %></td>
+                                        <td><%= d.giftBonus %></td>
+                                        <td><%= d.totalTodayBonus %></td>
+                                        <td class="actions text-center">
+                                            <a href="<%= host %>/user/view/<%= d._id %>" target="_blank" class="on-editing save-row">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<%- include('footer') %>
+
+<script>
+    $(document).ready(function() {
+        
+        
+        let a=document.getElementById("userid").value
+        var THAT_STATUS = "";
+        var START_DATE 
+        var END_DATE 
+        var ID=a
+        $('.select-status').select2({
+            allowClear: true,
+            placeholder: 'Debit/Credit'
+        });
+
+        $('.select-status').on('select2:select', function (e) {
+            THAT_STATUS = e.params.data.id;
+            table.ajax.reload();
+        });
+
+        $(".select-status").on("select2:clearing", function (e) {
+            THAT_STATUS = "";
+            table.ajax.reload();
+        });
+        $('.select-date').on('change', function () {
+        START_DATE = $('#startdatepicker').val();
+        END_DATE = $('#enddatepicker').val();
+        table.ajax.reload();
+    });
+       var table =  $('#example1').DataTable({
+            destroy: true,
+            dom: 'lBfrtip',
+            lengthMenu: [
+                [10, 25, 100, 500],
+                [10, 25, 100, 500]
+            ],
+            searching: true,
+            buttons: [
+                {
+                    extend: 'excel',
+                    text: '<span class="fa fa-file-excel-o"></span> Excel Export',
+                    exportOptions: {
+                        modifier: { search: 'applied', order: 'applied' }
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    text: '<span class="fa fa-file-pdf-o"></span> PDF Export',
+                    exportOptions: {
+                        modifier: { search: 'applied', order: 'applied' }
+                    }
+                }
+            ],
+            responsive: true,
+            processing: true,
+            serverSide: true,
+            // ajax: '/missinghistory_ajax',
+            "ajax": {
+              'url': '/missinghistory_ajax',
+              data: function (params) {
+                  params.THAT_STATUS = THAT_STATUS;
+                  params.startDate = START_DATE;
+                  params.endDate = END_DATE;
+                  params.id=ID
+              }
+            },
+            deferLoading: '<%= total %>',
+            aaSorting: [],
+            sortField: 5,
+    sortOrder: '-1',
+            columnDefs: [
+                { orderable: true, targets: [0, 1, 3, 4,5,6] },
+                { orderable: false, targets: [1, 2, 4,6] }
+            ]
+        });
+        table.ajax.reload();
+    });
+</script>

@@ -1,0 +1,75 @@
+<%- include('header') %><!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        <%= title %>
+      </h1>
+    </section>
+    <!-- Main content -->
+    <section class="content container-fluid">
+      <div class="row">
+        <div class="col-md-6 flex-fill">
+          <div class="box box-danger" style="width: fit-content; min-width: 100%">
+            <div class="box-body">
+              <table class="table table-bordered">
+                <tr>
+                  <td>User</td>
+                  <td>
+                    <textarea name="notice" id="notice" class="form-control" placeholder="Enter your user here...."></textarea>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Amount</td>
+                  <td>
+                    <textarea name="rules" id="rules" class="form-control" placeholder="Enter your amount here...."></textarea>
+                  </td>
+                </tr>
+                <input type="hidden" name="id" id="notice_id" value="<%=''%>" />
+                <tr>
+                  <td>
+                    <button type="button" class="btn btn-success" onclick="saveSettings()">
+                      Transfer
+                    </button>
+                  </td>
+                  <td></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <%- include('footer') %>
+    <script>
+      const saveSettings = () => {
+        const user = document.getElementById("notice").value;
+        const amount = document.getElementById("rules").value;
+        // const id = document.getElementById("notice_id").value;
+        console.log(user , amount)
+        fetch("/admin/transferbankUser", {
+          method: "POST",
+          body: JSON.stringify({ user : user, amount :amount}),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then(response => response.json())
+          .then(response => {
+            const title = response.status == 1 ? "Success" : "Error";
+            swal({
+              icon: response.status == 1 ? "success" : "error",
+              title: response.Msg
+            }).then(() => {
+              window.location.reload();
+            });
+          })
+          .catch((error) => {
+            console.log(error , "-===-=");
+            swal({ icon: "error", title: "An error occurred" }).then(() => {
+              window.location.reload();
+            });
+          });
+      };
+    </script>

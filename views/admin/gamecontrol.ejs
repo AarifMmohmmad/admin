@@ -1,0 +1,116 @@
+<%- include('header') %><!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        <%= title %>
+      </h1>
+    </section>
+    <!-- Main content -->
+    <section class="content container-fluid">
+      <div class="row">
+        <div class="col-md-6 flex-fill">
+          <div class="box box-danger" style="width: fit-content; min-width: 70%">
+            <div class="box-body" style="display: flex; flex-direction: column; width: 100%;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4>Classic Andar Bahar</h4>
+                    <div style="display: flex; gap: 40px;">
+                        <button type="button" class="btn btn-success" onclick="saveSettings('anderbahar' , 'automatic')" id="lA">Lowest winning</button>
+                        <button type="button" class="btn btn-success" onclick="saveSettings('anderbahar' , 'random')" id="rA">Random winning </button>
+                    </div>
+                </div>
+                <br/>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4>Roullete</h4>
+                    <div style="display: flex; gap: 40px;">
+                        <button type="button" class="btn btn-success" onclick="saveSettings('roulette' , 'automatic')" id="lR">Lowest winning</button>
+                        <button type="button" class="btn btn-success" onclick="saveSettings('roulette' , 'random')" id="rR">Random winning </button>
+                    </div>
+                </div>
+                <br/>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4>DragonVsTiger</h4>
+                    <div style="display: flex; gap: 40px;">
+                        <button type="button" class="btn btn-success" onclick="saveSettings('dragan' , 'automatic')" id="lD">Lowest winning</button>
+                        <button type="button" class="btn btn-success" onclick="saveSettings('dragan' , 'random')" id="rD">Random winning </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        </div>
+      </div>
+    </section>
+  </div>
+  <%- include('footer') %>
+    <script>
+      const saveSettings = (game, status) => {
+        console.log(game, status)
+        // const notice = document.getElementById("notice").value;
+        // const rules = document.getElementById("rules").value;
+        // const id = document.getElementById("notice_id").value;
+        fetch("/admin/chargestatus", {
+          method: "POST",
+          body: JSON.stringify({ game: game, status:status }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then(response => response.json())
+          .then(response => {
+            const title = response.status == 1 ? "Success" : "Error";
+            swal({
+              icon: response.status == 1 ? "success" : "error",
+              title: response.Msg
+            }).then(() => {
+              window.location.reload();
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            swal({ icon: "error", title: "An error occurred" }).then(() => {
+              window.location.reload();
+            });
+          });
+      };
+
+          document.addEventListener("DOMContentLoaded", function () {
+            console.log("DOM loaded")
+            fetch("/admin/gestatus", {
+          method: "POST",
+          body: JSON.stringify({ }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then(response => response.json())
+          .then(response => {
+            const title = response.status == 1 ? "Success" : "Error";
+            console.log(response)
+            let details = response.data
+            if(details.anderbahar == "automatic"){
+                document.getElementById("lA").style = "background-color: red; color: white;" 
+            }else{
+                document.getElementById("rA").style = "background-color: red; color: white;"
+            }
+            if(details.roulette == "automatic"){
+                document.getElementById("lR").style = "background-color: red; color: white;"
+            }else{
+                document.getElementById("rR").style = "background-color: red; color: white;"
+            }
+            if(details.dragan == "automatic"){
+                document.getElementById("lD").style = "background-color: red; color: white;"
+            }else{
+                document.getElementById("rD").style = "background-color: red; color: white;"
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            swal({ icon: "error", title: "An error occurred" }).then(() => {
+              window.location.reload();
+            });
+          });
+          })
+  // router.post("/admin/gestatus", AdminController.getchangeStatus);
+
+    </script>
