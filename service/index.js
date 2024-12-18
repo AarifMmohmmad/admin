@@ -247,9 +247,7 @@ module.exports = {
           return next();
       }
       else {
-        console.log(req.session)
           var token = req.session ? (req.session.auth ? req.session.auth : false) : false;
-          console.log("🚀 ~ file: index.js:154 ~ authenticateAdmin:function ~ token:", token)
           if (token) {
               us = await Model.SuperAdmin.findOne({
                   token : token

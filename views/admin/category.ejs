@@ -1,0 +1,127 @@
+<%- include('header') %>
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>
+            <%= title %>
+        </h1>
+        <!-- Add Category Button -->
+        <button id="addCategory" class="btn btn-primary" style="margin-top: 10px;">
+            <i class="fa fa-plus"></i> Add Category
+        </button>
+    </section>
+    <section class="content container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-body table-responsive">
+                        <div class="pull-right" style="margin-top: 32px; display: flex;">
+                            <input type="text" id="search" class="form-control" placeholder="nickname"
+                                style="width: 150px; height: 33px; margin-left: 10px;" />
+                        </div>
+                        <table id="example1" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Status</th>
+                                    <th>Number Of Product</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be filled dynamically by DataTable -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<%- include('footer') %>
+
+<script>
+    $(document).ready(function () {
+        let name = '';
+
+        // When user types in search input, capture the value
+        $('#search').on('keyup', function () {
+            name = $(this).val();
+            table.ajax.reload(); // Reload the table data with the updated search term
+        });
+
+        // Add Category Button Click Event
+        // $('#addCategory').on('click', function () {
+        //     alert('Add Category button clicked!');
+        //     // You can replace the alert with a modal or redirect to another page
+        // });
+
+        $('#addCategory').on('click', function () {
+            // Redirect to the add category page when button is clicked
+            window.location.href = '/admin/categoryadd';
+        });
+
+        var table = $('#example1').DataTable({
+            destroy: true,
+            dom: 'lBfrtip',
+            lengthMenu: [
+                [10, 25, 100, 500],
+                [10, 25, 100, 500]
+            ],
+            searching: true,
+            language: {
+                searchPlaceholder: "name",
+            },
+            buttons: [
+                {
+                    extend: 'excel',
+                    text: '<span class="fa fa-file-excel-o"></span> Excel Export',
+                    exportOptions: {
+                        modifier: { search: 'applied', order: 'applied' }
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    text: '<span class="fa fa-file-pdf-o"></span> PDF Export',
+                    exportOptions: {
+                        modifier: { search: 'applied', order: 'applied' }
+                    }
+                }
+            ],
+            responsive: true,
+            processing: true,
+            serverSide: true, // This means the server is responsible for pagination, sorting, etc.
+            ajax: {
+                url: '/admin/categorylist',
+                type: 'GET',
+                data: function (params) {
+                    params.name = name;  // Pass the search term to the server
+                    params.start = params.start || 0;  // Include start index for pagination
+                    params.length = params.length || 10;  // Include length of records per page
+                },
+                dataSrc: function (json) {
+                    return json.data;  // Ensure the server responds with a { data: [...] } array
+                }
+            },
+            columns: [
+                { data: "id" },
+                { data: "name" },
+                { data: "position" },
+                { data: "status" },
+                { data: "numberOfProduct" },
+                { data: "action" }
+            ],
+            columnDefs: [
+                { orderable: true, targets: [0, 1, 2, 3, 4] },
+                { orderable: false, targets: [5] }
+            ]
+        });
+    });
+</script>
+
+<script>
+  
+</script>

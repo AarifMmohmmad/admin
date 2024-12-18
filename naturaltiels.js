@@ -58,11 +58,11 @@ const server = http.createServer(app);
 //     cert: certificate,
 //     ca: bundle
 //   }, app);
-app.use(session({
-    secret: 'your_secret_key', // Change this to your secret key
-    resave: false,
-    saveUninitialized: true
-}));
+// app.use(session({
+//     secret: 'your_secret_key', // Change this to your secret key
+//     resave: false,
+//     saveUninitialized: true
+// }));
 
 
 // app.use('/app', express.static(path.join(__dirname, 'public', 'app')));
@@ -100,14 +100,14 @@ const adminRouter = require('./routes/adminRouter');
 
 
 // Middleware for authentication (admin routes)
-app.use((req, res, next) => {
-    if (!req.path.startsWith('/api')) {
-        console.log("Admin middleware",req.path);
-        service.authenticateAdmin(req,res,next)
-    } else {
-        next();
-    }
-});
+// app.use((req, res, next) => {
+//     if (!req.path.startsWith('/api')) {
+//         console.log("Admin middleware",req.path);
+//         service.authenticateAdmin(req,res,next)
+//     } else {
+//         next();
+//     }
+// });
 app.use('/api', apiRouter); 
 app.use('/', adminRouter);
 
@@ -142,6 +142,7 @@ process.on('unhandledRejection', function(err) {
     );
 
     dbConnection.then(() => {
+        console.log("mongodb connected successfully ")
         // logger.info(`Connected to ${process.env.NODE_ENV} database: ${config.dbConnectionUrl}`);
         server.listen(config.port, function() {
             // logger.info('Game API Server listening at PORT:' + config.port);
@@ -153,6 +154,5 @@ process.on('unhandledRejection', function(err) {
 } catch (err) {
     logger.info('DBCONNECT ERROR', err);
 }
-
 
 module.exports = server;

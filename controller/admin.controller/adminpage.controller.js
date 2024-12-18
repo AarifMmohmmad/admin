@@ -1,5 +1,6 @@
 
 const config = require('../../config/index');
+const { category } = require('../../service/logger');
 module.exports = {
     login: (req, res) => {
         console.error(req.headers.host );
@@ -75,4 +76,91 @@ module.exports = {
           total: 1,
         });
       },
+
+      // category: async (req, res) => {
+      //   res.render("admin/category", {
+      //     title: "category List", 
+      //     type: "category",
+      //     sub: "category",
+      //     sub2: "",
+      //     host: config.pre + req.headers.host,
+      //     admin: req.admin,
+      //     data: [],
+      //     total: 1,
+      //   });
+      // },
+      category : async (req, res) => {
+        res.render("admin/category", {
+            title: "Category List", 
+            type: "category",
+            sub: "category",
+            sub2: "",
+            host:  config.pre + req.headers.host,
+            admin: req.admin,
+            data: [],
+            total: 1,
+        });
+    },
+    subcategory : async (req, res) => {
+      res.render("admin/subcategory", {
+          title: "subCategory List", 
+          type: "subcategory",
+          sub: "subcategory",
+          sub2: "",
+          host:  config.pre + req.headers.host,
+          admin: req.admin,
+          data: [],
+          total: 1,
+      });
+  },
+  product : async (req, res) => {
+    res.render("admin/product", {
+        title: "product List", 
+        type: "product",
+        sub: "product",
+        sub2: "",
+        host:  config.pre + req.headers.host,
+        admin: req.admin,
+        data: [],
+        total: 1,
+    });
+},
+
+addproduct : async (req, res) => {
+  res.render("admin/addproduct", {
+      title: "addd List", 
+      type: "product",
+      sub: "product",
+      sub2: "",
+      host:  config.pre + req.headers.host,
+      admin: req.admin,
+      data: [],
+      total: 1,
+  });
+},
+
+    addcategory : async (req, res) => {
+      res.render("admin/addcategory", {
+          title: "addd List", 
+          type: "category",
+          sub: "category",
+          sub2: "",
+          host:  config.pre + req.headers.host,
+          admin: req.admin,
+          data: [],
+          total: 1,
+      });
+  },
+  subaddcategory : async (req, res) => {
+    res.render("admin/subaddcategory", {
+        title: "addd List", 
+        type: "category",
+        sub: "category",
+        sub2: "",
+        host:  config.pre + req.headers.host,
+        admin: req.admin,
+        data: [],
+        total: 1,
+    });
+},
 }
