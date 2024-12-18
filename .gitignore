@@ -5,7 +5,6 @@
 
 # Node artifact files
 node_modules/
-dist/
 package-lock.json/
 # Compiled Java class files
 *.class
@@ -21,7 +20,6 @@ package-lock.json/
 
 # Maven
 target/
-dist/
 
 # JetBrains IDE
 .idea/
