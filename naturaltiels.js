@@ -106,6 +106,7 @@ app.post('/upload', (req, res) => {
 
 app.post('/admin/add-category', (req, res) => {
     // Check if the required fields and files are available
+    console.log("eeeeeeeeee")
     if (!req.body.name || !req.body.position || !req.files) {
         return res.status(400).json({ success: false, message: "Missing required fields or files." });
     }
