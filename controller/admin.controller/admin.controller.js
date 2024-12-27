@@ -17,27 +17,27 @@ module.exports = {
         
         const {email , password } = req.body;
         console.log(email , password,"password",req.body)
-        // if (!email ) {
-        //   return res
-        //     .status(200)
-        //     .json(Service.response(0, localization.missingParamError, null));
-        // }
+        if (!email ) {
+          return res
+            .status(200)
+            .json(Service.response(0, localization.missingParamError, null));
+        }
 
         var user = await Model.SuperAdmin.findOne({
-          // email:email
+          email:email
         });
           // console.log(user,"user")
-        // if (!user){
-        //   return res
-        //   .status(200)
-        //   .json(Service.response(0, localization.invalidCredentials, null));
-        // }
-        // let match = await user.authenticate(password);
-        // if (!match) { 
-        //       return res
-        //         .status(200)
-        //         .json(Service.response(0, localization.incorrectPassword, null));
-        //     }
+        if (!user){
+          return res
+          .status(200)
+          .json(Service.response(0, localization.invalidCredentials, null));
+        }
+        let match = await user.authenticate(password);
+        if (!match) { 
+              return res
+                .status(200)
+                .json(Service.response(0, localization.incorrectPassword, null));
+            }
         
             const newToken = user.generateJWT();
   
