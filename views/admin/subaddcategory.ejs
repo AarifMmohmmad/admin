@@ -16,7 +16,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="category">Parent Category</label>
-                                <select id="category" name="category" class="form-control" required>
+                                <select id="category" name="category" class="form-control" >
                                     <!-- Dynamic Category Options will be populated here -->
                                 </select>
                             </div>
@@ -72,13 +72,6 @@
                 }
             }
         });
-
-        // Initialize CKEditor for the description field
-        ClassicEditor
-            .create(document.querySelector('#description'))
-            .catch(error => {
-                console.error(error);
-            });
 
         // Handle form submission
         $('#add-subcategory-form').on('submit', function(e) {

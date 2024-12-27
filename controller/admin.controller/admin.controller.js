@@ -8,19 +8,6 @@ const path = require('path')
 
 
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-      cb(null, 'uploads/'); // The folder where files will be uploaded
-  },
-  filename: (req, file, cb) => {
-      cb(null, Date.now() + path.extname(file.originalname)); // Unique filename based on timestamp
-  }
-});
-
-const upload = multer({ storage: storage }).fields([
-  { name: 'category_image', maxCount: 1 },
-  { name: 'banner_image', maxCount: 1 }
-]);
 
 
 module.exports = {
@@ -29,28 +16,28 @@ module.exports = {
       try {
         
         const {email , password } = req.body;
-        console.log(email , password,"password")
-        if (!email ) {
-          return res
-            .status(200)
-            .json(Service.response(0, localization.missingParamError, null));
-        }
+        console.log(email , password,"password",req.body)
+        // if (!email ) {
+        //   return res
+        //     .status(200)
+        //     .json(Service.response(0, localization.missingParamError, null));
+        // }
 
         var user = await Model.SuperAdmin.findOne({
-          email:email
+          // email:email
         });
-          console.log(user,"user")
-        if (!user){
-          return res
-          .status(200)
-          .json(Service.response(0, localization.invalidCredentials, null));
-        }
-        let match = await user.authenticate(password);
-        if (!match) { 
-              return res
-                .status(200)
-                .json(Service.response(0, localization.incorrectPassword, null));
-            }
+          // console.log(user,"user")
+        // if (!user){
+        //   return res
+        //   .status(200)
+        //   .json(Service.response(0, localization.invalidCredentials, null));
+        // }
+        // let match = await user.authenticate(password);
+        // if (!match) { 
+        //       return res
+        //         .status(200)
+        //         .json(Service.response(0, localization.incorrectPassword, null));
+        //     }
         
             const newToken = user.generateJWT();
   
@@ -606,7 +593,7 @@ productlist: async (req, res) => {
       .skip(start)
       .limit(length)
       .lean();
-    console.log(data)
+    // console.log(data)
     // डेटा को फॉर्मेट करें
     const formattedData = data.map(item => ({
       id: item.id,

@@ -38,7 +38,7 @@ module.exports = {
         data.totalprofit = 1
         data.pokerProfit = 1
         // req.admin.role = "ALL" ;
-        console.log(req.admin ,req.admin)
+        // console.log(req.admin ,req.admin)
         res.render("admin/index", {
           title: "Dashboard",
           type: "dashboard",

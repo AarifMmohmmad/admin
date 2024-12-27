@@ -191,7 +191,7 @@ module.exports = {
       }
       const cards = [cn1,cn2, cn3]; 
       let  sequence = isSequence(cards)
-      console.log(sequence, cn1,cn2,cn3,ct1,ct2,ct3)
+      // console.log(sequence, cn1,cn2,cn3,ct1,ct2,ct3)
 
         // if(squence[0]== (squence[1]+1) && squence[0]== (squence[1]+2) && ct1==ct2 && ct2==ct3 && ct3==ct1){
         //   return amount = 3200000
@@ -238,9 +238,9 @@ module.exports = {
       var params = Object.values(req.params || {});
       for (var str of params) {
           path = path.split('/' + str).join('');
-          console.log('PATH PAT', path);
+          // console.log('PATH PAT', path);
       }
-      console.log('PATH', path);
+      // console.log('PATH', path);
 
 
       if (config.ADMIN_ACCESS.FREE_ROUTES.indexOf(path) > -1) {
@@ -255,7 +255,8 @@ module.exports = {
               if (us) {
                   if (us.is_active && !us.is_deleted) {
                       if (config.ADMIN_ACCESS.NONAUTHORIZED_ONLY.indexOf(path) > -1){
-                          console.log("ha")
+                          // console.log("ha")
+
 
                           return req.method != 'GET'
                               ? res.send({
