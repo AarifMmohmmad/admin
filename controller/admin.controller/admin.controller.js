@@ -244,22 +244,22 @@ module.exports = {
           ];
   
           // एग्रीगेशन रन करें
-          const data = await Model.Category.aggregate(pipeline);
-  
+          const data = await Model.Category.find();
+          console.log(data)
           // कुल रिकॉर्ड्स और फ़िल्टर किए गए रिकॉर्ड्स की गिनती
           const recordsTotal = await Model.Category.countDocuments();
           const recordsFiltered = searchTerm
               ? await Model.Category.countDocuments({
-                    c_name: { $regex: searchTerm, $options: 'i' },
+                    name: { $regex: searchTerm, $options: 'i' },
                 })
               : recordsTotal;
   
           // डेटा फॉर्मेट करें
           const formattedData = data.map(item => ({
-              id: item.id,
-              name: item.c_name,
-              position: item.c_position || 'N/A',
-              status: item.isActive ? 'Active' : 'Inactive',
+              id: 1,
+              name: item.name,
+              position: item.position || 'N/A',
+              status: item.status ? 'Active' : 'Inactive',
               numberOfProduct: item.numberOfProduct || 0, // डायनामिक प्रोडक्ट गिनती
               action: `<button>Edit</button><button>Delete</button>`, // Action बटन
           }));
@@ -277,6 +277,17 @@ module.exports = {
       }
   },
   
+  
+
+  catelist :  async (req, res) => {
+    try {
+      const categories = await Model.Category.find();
+      res.json({ success: true, data: categories });
+  } catch (error) {
+      console.error('Error fetching categories:', error);
+      res.status(500).json({ success: false, message: 'Failed to fetch categories' });
+  }
+},
   
   createCategory : async (req, res) => {
     try {
@@ -372,102 +383,24 @@ subcategorylist: async (req, res) => {
   const draw = parseInt(req.query.draw) || 1; // DataTable की draw property
 
   try {
-    // Aggregation पाइपलाइन
-    const pipeline = [
-      // सर्च लागू करें
-      {
-        $match: searchTerm
-          ? { sc_name: { $regex: searchTerm, $options: 'i' } }
-          : {},
-      },
-      {
-        $addFields: {
-          idAsString: { $toString: '$id' }, // SubCategory id को string में बदलें
-        },
-      },
-      // Parent category से डेटा जोड़ें
-      {
 
-        $lookup: {
-          from: 'categories', // Parent category संग्रह का नाम
-          localField: 'parent_category', // SubCategory का फ़ील्ड
-          foreignField: 'id', // Category का फ़ील्ड
-          as: 'parentCategory', // Output फ़ील्ड
-        },
-      },
-      // Parent category का पहला एलिमेंट निकालें
-      {
-        $unwind: {
-          path: '$parentCategory',
-          preserveNullAndEmptyArrays: true, // अगर parent category नहीं मिले तो null रखें
-        },
-      },
-      // SubCategory को Products से जोड़ने के लिए `id` को string में बदलें
-      {
-        $addFields: {
-          idAsString: { $toString: '$id' }, // SubCategory id को string में बदलें
-        },
-      },
-      // Products से डेटा जोड़ें
-      {
-        $lookup: {
-          from: 'products', // Products संग्रह का नाम
-          let: { subCatId: '$idAsString' }, // SubCategory id पास करें
-          pipeline: [
-            {
-              $addFields: {
-                subcategoryArray: { $split: ['$p_subcategory', ','] }, // p_subcategory को array में बदलें
-              },
-            },
-            {
-              $match: {
-                $expr: { $in: ['$$subCatId', '$subcategoryArray'] }, // मैच करें
-              },
-            },
-          ],
-          as: 'products', // Output फ़ील्ड
-        },
-      },
-      // प्रोडक्ट की गिनती जोड़ें
-      {
-        $addFields: {
-          numberOfProduct: { $size: '$products' },
-        },
-      },
-      // केवल आवश्यक फ़ील्ड रखें
-      {
-        $project: {
-          id: 1,
-          sc_name: 1,
-          parent_cate_name: '$parentCategory.c_name',
-          isActive: 1,
-          discount_line: 1,
-          numberOfProduct: 1, // डायनामिक प्रोडक्ट गिनती
-        },
-      },
-      // पेजिनेशन लागू करें
-      { $skip: start },
-      { $limit: length },
-    ];
-
-    // Aggregation रन करें
-    const data = await Model.SubCategory.aggregate(pipeline);
-
+    const data = await Model.SubCategory.find().populate("category");
+console.log(data)
     // कुल रिकॉर्ड्स और फ़िल्टर किए गए रिकॉर्ड्स की गिनती
     const recordsTotal = await Model.SubCategory.countDocuments();
     const recordsFiltered = searchTerm
       ? await Model.SubCategory.countDocuments({
-          sc_name: { $regex: searchTerm, $options: 'i' },
+          name: { $regex: searchTerm, $options: 'i' },
         })
       : recordsTotal;
 
     // डेटा फॉर्मेट करें
     const formattedData = data.map(item => ({
       id: item.id,
-      name: item.sc_name,
-      parent_cate: item.parent_cate_name || 'N/A', // Parent category का नाम
-      status: item.isActive ? 'Active' : 'Inactive',
-      numberOfProduct: item.numberOfProduct || 0, // डायनामिक प्रोडक्ट गिनती
+      name: item.name,
+      parent_cate: item.category.name || 'N/A', // Parent category का नाम
+      status: item.category.status ? 'Active' : 'Inactive',
+      numberOfProduct: 0 || 0, // डायनामिक प्रोडक्ट गिनती
       action: `<button>Edit</button><button>Delete</button>`, // Action बटन
     }));
 
@@ -580,7 +513,7 @@ productlist: async (req, res) => {
 
     // सर्च फिल्टर लागू करें
     const query = searchTerm
-      ? { p_name: { $regex: searchTerm, $options: 'i' } }
+      ? { name: { $regex: searchTerm, $options: 'i' } }
       : {};
 
     // कुल रिकॉर्ड्स की गिनती
@@ -593,16 +526,17 @@ productlist: async (req, res) => {
       .skip(start)
       .limit(length)
       .lean();
+      // console.log(data)
     // console.log(data)
     // डेटा को फॉर्मेट करें
     const formattedData = data.map(item => ({
-      id: item.id,
-      sku: item.sku_code,
-      name: item.p_name,
-      status: item.status ? 'Active' : 'Inactive',
-      slprice: item.p_our_price,
-      price: item.p_price,
-      quantity: item.stock,
+      id: item._id,
+      sku: item.skuCode,
+      name: item.name,
+      status: true ? 'Active' : 'Inactive',
+      slprice: item.price.ourPrice,
+      price: item.price.price,
+      quantity: 1000,
       action: `
         <button class="btn btn-primary btn-edit" data-id="${item.id}">Edit</button>
         <button class="btn btn-danger btn-delete" data-id="${item.id}">Delete</button>

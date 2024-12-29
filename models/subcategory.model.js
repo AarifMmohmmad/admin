@@ -2,30 +2,20 @@ const mongoose = require('mongoose');
 
 // Define the SubCategory schema
 const subCategorySchema = new mongoose.Schema(
-    
     {
-        id: { type: String, required: true, unique: true }, // Unique ID for the category
-        sc_name: {
+        name: {
             type: String,
             required: true,
             trim: true
         },
-        isActive: {
-            type: String,
-            required: true,
-            trim: true
-        },
-        parent_category: {
-            type: Number,
-            required: true,
-        },
-        sc_desc: {
-            type: String,
+        category: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Category',
             required: true
         },
-        sc_slider_img: {
-            type: String, // Path to image file
-            default: ''
+        description: {
+            type: String,
+            required: true
         },
         seo: {
             meta_title: {

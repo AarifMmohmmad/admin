@@ -13,25 +13,25 @@
                             <!-- Product Name -->
                             <div class="form-group">
                                 <label for="name">Product Name</label>
-                                <input type="text" id="name" name="name" class="form-control" required />
+                                <input type="text" id="name" name="name" class="form-control" />
                             </div>
 
                             <!-- Brand -->
                             <div class="form-group">
                                 <label for="brand">Brand</label>
-                                <input type="text" id="brand" name="brand" class="form-control" required />
+                                <input type="text" id="brand" name="brand" class="form-control" />
                             </div>
 
                             <!-- SKU Code -->
                             <div class="form-group">
                                 <label for="skuCode">SKU Code</label>
-                                <input type="text" id="skuCode" name="skuCode" class="form-control" required />
+                                <input type="text" id="skuCode" name="skuCode" class="form-control" />
                             </div>
 
                             <!-- URL Key -->
                             <div class="form-group">
                                 <label for="urlKey">URL Key</label>
-                                <input type="text" id="urlKey" name="urlKey" class="form-control" required />
+                                <input type="text" id="urlKey" name="urlKey" class="form-control" />
                             </div>
 
                             <!-- Visibility -->
@@ -40,20 +40,40 @@
                                 <input type="checkbox" id="visibility" name="visibility" class="form-control" />
                             </div>
 
-                            <!-- Category -->
+                            <!-- Product Label -->
                             <div class="form-group">
-                                <label for="category">Category</label>
-                                <select id="category" name="category" class="form-control" required>
-                                    <!-- Categories will be populated here -->
-                                </select>
+                                <label for="productLabel">Product Label</label>
+                                <input type="text" id="productLabel" name="productLabel" class="form-control" />
                             </div>
 
-                            <!-- SubCategory -->
+                            <!-- Size -->
                             <div class="form-group">
-                                <label for="subCategory">SubCategory</label>
-                                <select id="subCategory" name="subCategory" class="form-control" required>
-                                    <!-- Subcategories will be populated here -->
-                                </select>
+                                <label for="size">Size</label>
+                                <input type="text" id="size" name="size" class="form-control" />
+                            </div>
+
+                            <!-- Product Type -->
+                            <div class="form-group">
+                                <label for="productType">Product Type</label>
+                                <input type="text" id="productType" name="productType" class="form-control" />
+                            </div>
+
+                            <!-- Group -->
+                            <div class="form-group">
+                                <label for="group">Group</label>
+                                <input type="text" id="group" name="group" class="form-control" />
+                            </div>
+
+                            <!-- Unit -->
+                            <div class="form-group">
+                                <label for="unit">Unit</label>
+                                <input type="text" id="unit" name="unit" class="form-control" />
+                            </div>
+
+                            <!-- Serial No -->
+                            <div class="form-group">
+                                <label for="serialNo">Serial No</label>
+                                <input type="text" id="serialNo" name="serialNo" class="form-control" />
                             </div>
 
                             <!-- Description -->
@@ -62,43 +82,69 @@
                                 <textarea id="description" name="description" class="form-control"></textarea>
                             </div>
 
-                            <!-- Related Products -->
+                            <!-- Meta Description -->
                             <div class="form-group">
-                                <label for="linkedProducts">Related Products</label>
-                                <select id="linkedProducts" name="linkedProducts[relatedProducts][]" class="form-control" multiple>
-                                    <!-- Related products will be populated here -->
-                                </select>
+                                <label for="metaTitle">Meta Title</label>
+                                <input type="text" id="metaTitle" name="metaDescription[metaTitle]" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label for="metaKeywords">Meta Keywords</label>
+                                <input type="text" id="metaKeywords" name="metaDescription[metaKeywords]" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label for="metaDescription">Meta Description</label>
+                                <textarea id="metaDescription" name="metaDescription[metaDescription]" class="form-control"></textarea>
                             </div>
 
                             <!-- Price Fields -->
                             <div class="form-group">
                                 <label for="price">Price</label>
-                                <input type="number" id="price" name="price[price]" class="form-control" placeholder="Price" required />
+                                <input type="number" id="price" name="price" class="form-control" />
                             </div>
 
                             <div class="form-group">
                                 <label for="ourPrice">Our Price</label>
-                                <input type="number" id="ourPrice" name="price[ourPrice]" class="form-control" placeholder="Our Price" required />
+                                <input type="number" id="ourPrice" name="ourPrice" class="form-control" />
                             </div>
 
                             <div class="form-group">
                                 <label for="ourCutPrice">Our Cut Price</label>
-                                <input type="number" id="ourCutPrice" name="price[ourCutPrice]" class="form-control" placeholder="Our Cut Price" required />
+                                <input type="number" id="ourCutPrice" name="ourCutPrice" class="form-control" />
                             </div>
 
                             <div class="form-group">
                                 <label for="ourFullCutPrice">Our Full Cut Price</label>
-                                <input type="number" id="ourFullCutPrice" name="price[ourFullCutPrice]" class="form-control" placeholder="Our Full Cut Price" required />
+                                <input type="number" id="ourFullCutPrice" name="ourFullCutPrice" class="form-control" />
                             </div>
 
-                            <!-- Image Upload (Drag and Drop) -->
+                            <!-- Image Upload (Single Image) -->
                             <div class="form-group">
-                                <label for="images">Product Images</label>
-                                <div id="image-drop" class="drop-area">
-                                    <p>Drag and drop images here</p>
-                                    <input type="file" id="images" name="images[]" accept="image/*" multiple />
-                                </div>
-                                <div id="preview-images"></div>
+                                <label for="image">Product Image</label>
+                                <input type="file" id="image" name="image" class="form-control" accept="image/*" />
+                            </div>
+
+                            <!-- Category -->
+                            <div class="form-group">
+                                <label for="category">Category</label>
+                                <select id="category" name="category" class="form-control">
+                                    <!-- Categories will be populated here -->
+                                </select>
+                            </div>
+
+                            <!-- SubCategory -->
+                            <div class="form-group">
+                                <label for="subCategory">SubCategory</label>
+                                <select id="subCategory" name="subCategory" class="form-control">
+                                    <!-- Subcategories will be populated here -->
+                                </select>
+                            </div>
+
+                            <!-- Linked Products -->
+                            <div class="form-group">
+                                <label for="linkedProducts">Related Products</label>
+                                <select id="linkedProducts" name="linkedProducts[relatedProducts][]" class="form-control" multiple>
+                                    <!-- Related products will be populated here -->
+                                </select>
                             </div>
 
                             <button type="submit" class="btn btn-primary">Add Product</button>
@@ -117,7 +163,7 @@
     $(document).ready(function() {
         // Fetch categories for dropdown
         $.ajax({
-            url: '/admin/get-categories', // API endpoint for categories
+            url: '/admin/get-categories',
             method: 'GET',
             success: function(response) {
                 if (response.success) {
@@ -147,7 +193,7 @@
 
         // Fetch existing products for related products dropdown
         $.ajax({
-            url: '/admin/get-products', // API endpoint for related products
+            url: '/admin/get-products',
             method: 'GET',
             success: function(response) {
                 if (response.success) {
@@ -163,46 +209,21 @@
         // Initialize CKEditor for the description field
         ClassicEditor
             .create(document.querySelector('#description'))
+            .then(editor => {
+                // Ensure that the textarea is updated before form submission
+                $('#add-product-form').submit(function(e) {
+                    const description = editor.getData();
+                    $('#description').val(description);
+
+                    if (!description) {
+                        alert('Description cannot be empty');
+                        e.preventDefault();
+                    }
+                });
+            })
             .catch(error => {
                 console.error(error);
             });
-
-        // Image drag and drop feature
-        const dropArea = $('#image-drop');
-        const previewArea = $('#preview-images');
-        const fileInput = $('#images');
-
-        dropArea.on('dragover', function(e) {
-            e.preventDefault();
-            dropArea.addClass('dragging');
-        });
-
-        dropArea.on('dragleave', function() {
-            dropArea.removeClass('dragging');
-        });
-
-        dropArea.on('drop', function(e) {
-            e.preventDefault();
-            dropArea.removeClass('dragging');
-            const files = e.originalEvent.dataTransfer.files;
-            handleFiles(files);
-        });
-
-        fileInput.on('change', function() {
-            const files = fileInput[0].files;
-            handleFiles(files);
-        });
-
-        function handleFiles(files) {
-            previewArea.empty();
-            for (const file of files) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewArea.append(`<img src="${e.target.result}" width="100" height="100" />`);
-                };
-                reader.readAsDataURL(file);
-            }
-        }
 
         // Form submission
         $('#add-product-form').submit(function(e) {
@@ -217,7 +238,7 @@
                 success: function(response) {
                     if (response.success) {
                         alert('Product added successfully.');
-                        window.location.href = '/admin/products'; // Redirect to products page
+                        window.location.href = '/admin/product';
                     } else {
                         alert('Failed to add product.');
                     }

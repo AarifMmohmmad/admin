@@ -12,13 +12,11 @@
                         <form id="add-subcategory-form" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label for="name">SubCategory Name</label>
-                                <input type="text" id="name" name="name" class="form-control" required />
+                                <input type="text" id="name" name="name" class="form-control"  />
                             </div>
                             <div class="form-group">
                                 <label for="category">Parent Category</label>
-                                <select id="category" name="category" class="form-control" >
-                                    <!-- Dynamic Category Options will be populated here -->
-                                </select>
+                                <select id="category" name="category" class="form-control"></select>
                             </div>
                             <div class="form-group">
                                 <label for="description">Description</label>
@@ -32,15 +30,15 @@
                                 <legend>SEO Details</legend>
                                 <div class="form-group">
                                     <label for="meta_title">Meta Title</label>
-                                    <input type="text" id="meta_title" name="seo[meta_title]" class="form-control" required />
+                                    <input type="text" id="meta_title" name="seo[meta_title]" class="form-control"  />
                                 </div>
                                 <div class="form-group">
                                     <label for="meta_description">Meta Description</label>
-                                    <textarea id="meta_description" name="seo[meta_description]" class="form-control" required></textarea>
+                                    <textarea id="meta_description" name="seo[meta_description]" class="form-control" ></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="meta_keywords">Meta Keywords</label>
-                                    <input type="text" id="meta_keywords" name="seo[meta_keywords]" class="form-control" required />
+                                    <input type="text" id="meta_keywords" name="seo[meta_keywords]" class="form-control"  />
                                 </div>
                             </fieldset>
                             <button type="submit" class="btn btn-primary">Add SubCategory</button>
@@ -54,48 +52,47 @@
 
 <%- include('footer') %>
 
-<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
 <script>
     $(document).ready(function() {
-        // Load categories for the parent category dropdown
+        // Load categories into the dropdown
         $.ajax({
-            url: '/admin/get-categories', // API endpoint to get all categories
+            url: '/admin/get-categories',
             method: 'GET',
             success: function(response) {
                 if (response.success) {
-                    const categories = response.data;
-                    categories.forEach(function(category) {
+                    response.data.forEach(function(category) {
                         $('#category').append(`<option value="${category._id}">${category.name}</option>`);
                     });
                 } else {
                     alert('Failed to load categories.');
                 }
+            },
+            error: function() {
+                alert('Error loading categories.');
             }
         });
 
         // Handle form submission
         $('#add-subcategory-form').on('submit', function(e) {
             e.preventDefault();
-
-            const formData = new FormData(this); // Create FormData for the file upload
-
+            const formData = new FormData(this);
             $.ajax({
-                url: '/admin/add-subcategory', // API endpoint for adding subcategory
+                url: '/admin/add-subcategory',
                 method: 'POST',
                 data: formData,
-                processData: false, // Important for file upload
-                contentType: false, // Important for file upload
+                processData: false,
+                contentType: false,
                 success: function(response) {
                     if (response.success) {
                         alert('SubCategory added successfully!');
-                        window.location.href = '/admin/subcategories'; // Redirect to subcategories list
+                        window.location.href = '/admin/subcategory';
                     } else {
                         alert(response.message || 'Failed to add subcategory.');
                     }
                 },
                 error: function(err) {
                     console.error(err);
-                    alert('An error occurred while adding the subcategory.');
+                    alert('An error occurred.');
                 }
             });
         });

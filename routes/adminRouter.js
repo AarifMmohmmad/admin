@@ -45,6 +45,50 @@ router.get("/admin/user", AdminPagesController.users);
 
 router.get("/admin/category", AdminPagesController.category);
 router.get("/admin/categorylist", AdminController.categorylist);
+router.get("/admin/get-categories", AdminController.catelist);
+
+let productmodel = require("../models/product.model")
+let subcatgroymode = require("../models/subcategory.model")
+
+router.get('/admin/get-subcategories/:categoryId', async (req, res) => {
+    const { categoryId } = req.params; // Get categoryId from URL params
+
+    try {
+        // Fetch subcategories that match the categoryId
+        const subcategories = await subcatgroymode.find({ category: categoryId });
+
+        // Return subcategories
+        res.json({
+            success: true,
+            data: subcategories
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching subcategories.',
+            error: error.message
+        });
+    }
+});
+
+router.get('/admin/get-products', async (req, res) => {
+    try {
+        const products = await productmodel.find().populate('category').populate('subCategory').populate('linkedProducts.relatedProducts').populate('linkedProducts.productRequired');
+        res.json({
+            success: true,
+            data: products
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching products.',
+            error: error.message
+        });
+    }
+});
+
 router.get("/admin/categoryadd", AdminPagesController.addcategory);
 // router.post("/admin/add-category", AdminController.createCategory);
 

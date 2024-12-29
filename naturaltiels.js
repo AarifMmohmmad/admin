@@ -35,7 +35,6 @@ app.use(
 
 
 
-//loges request
 morgan.token('body', (req, res) => JSON.stringify(req.body));
 // app.use(morgan(':method :host :url :status :res[content-length] :body - :response-time ms'));
 // app.use(function(req, res, next) {
@@ -50,23 +49,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const server = http.createServer(app);
-// var privateKey = fs.readFileSync('ssl.key', 'utf8');
-// var certificate = fs.readFileSync('ssl.cert', 'utf8');
-// var bundle = fs.readFileSync('ssl.ca', 'utf8');
-// var server = https.createServer({
-//     key: privateKey,
-//     cert: certificate,
-//     ca: bundle
-//   }, app);
-// app.use(session({
-//     secret: 'your_secret_key', // Change this to your secret key
-//     resave: false,
-//     saveUninitialized: true
-// }));
-
-
-// app.use('/app', express.static(path.join(__dirname, 'public', 'app')));
-// app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -82,10 +64,6 @@ app.use(
     })
 );
 
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
-}
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -104,213 +82,98 @@ app.post('/upload', (req, res) => {
 });
 
 
-app.post('/admin/add-category', (req, res) => {
-    // Check if the required fields and files are available
-    console.log("eeeeeeeeee")
-    if (!req.body.name || !req.body.position || !req.files) {
-        return res.status(400).json({ success: false, message: "Missing required fields or files." });
-    }
 
-    // Handle uploaded files
-    const categoryImage = req.files.category_image;
-    const bannerImage = req.files.banner_image;
-
-    // Define paths to save the uploaded files
-    let imagename1 = categoryImage.name +Date.now()   
-     let imagename2 = bannerImage.name + Date.now()
-
-    const categoryImagePath = path.join(__dirname, 'uploads', categoryImage.name);
-    const bannerImagePath = path.join(__dirname, 'uploads', bannerImage.name);
-
-    // Move the files to the "uploads" directory
-    categoryImage.mv(categoryImagePath, (err) => {
-        if (err) {
-            return res.status(500).json({ success: false, message: 'Error uploading category image', error: err });
-        }
-
-        bannerImage.mv(bannerImagePath, (err) => {
-            if (err) {
-                return res.status(500).json({ success: false, message: 'Error uploading banner image', error: err });
-            }
-
-            // Save the category data to the database
-            const categoryData = {
-                name: req.body.name,
-                position: req.body.position,
-                discount_line: req.body.discount_line,
-                status: req.body.status === 'true',  // Convert string to boolean
-                category_status: req.body.category_status === 'true',  // Convert string to boolean
-                visibility: req.body.visibility,
-                description: req.body.description,
-                label: req.body.label,
-                banner: req.body.banner,
-                category_image: categoryImage.name, // Store image name in DB or path
-                banner_image: bannerImage.name, // Store banner image name in DB or path
-                related_products: req.body.related_products,
-                seo: {
-                    meta_title: req.body['seo[meta_title]'],
-                    meta_description: req.body['seo[meta_description]'],
-                    meta_keywords: req.body['seo[meta_keywords]']
-                }
-            };
-
-            // Example: Save the category to the database (you need to implement this part)
-            // CategoryModel.create(categoryData, (err, savedCategory) => {
-            //     if (err) {
-            //         return res.status(500).json({ success: false, message: 'Failed to save category', error: err });
-            //     }
-            //     res.json({ success: true, message: 'Category added successfully!' });
-            // });
-
-            // For now, let's return a success message
-            res.json({ success: true, message: 'Category added successfully!' });
-        });
-    });
-});
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
 
-app.post('/admin/add-product', async (req, res) => {
+let categorymodel  = require("./models/category.model") 
+let subcategory = require("./models/subcategory.model")
+let product = require("./models/product.model")
+app.post('/admin/add-category', async (req, res) => {
     try {
-        // Check if required fields are available
-        const { name, brand, skuCode, urlKey, visibility, category, subCategory, description, linkedProducts, price } = req.body;
-        
-        if (!name || !brand || !skuCode || !urlKey || !category || !subCategory || !description || !price) {
-            return res.status(400).json({ success: false, message: 'Missing required fields' });
+        if (!req.body.name || !req.files?.category_image || !req.files?.banner_image) {
+            return res.status(400).json({ success: false, message: 'Missing required fields or files.' });
         }
 
-        // Handle image files (assuming 'images' is the name of the input in the form)
-        let images = [];
-        if (req.files && req.files.images) {
-            if (Array.isArray(req.files.images)) {
-                // Handle multiple images
-                images = req.files.images.map(image => {
-                    const imageName = Date.now() + '-' + image.name;
-                    const uploadPath = path.join(__dirname, '../uploads/products', imageName);
-                    image.mv(uploadPath, (err) => {
-                        if (err) {
-                            console.error('Error uploading image:', err);
-                            return res.status(500).json({ success: false, message: 'Error uploading image', error: err });
-                        }
-                    });
-                    return imageName;
-                });
-            } else {
-                // Handle single image
-                const imageName = Date.now() + '-' + req.files.images.name;
-                const uploadPath = path.join(__dirname, '../uploads/products', imageName);
-                req.files.images.mv(uploadPath, (err) => {
-                    if (err) {
-                        console.error('Error uploading image:', err);
-                        return res.status(500).json({ success: false, message: 'Error uploading image', error: err });
-                    }
-                });
-                images.push(imageName);
-            }
-        }
+        const categoryImage = req.files.category_image;
+        const bannerImage = req.files.banner_image;
 
-        // Prepare the product data
-        const newProduct = new ProductModel({
-            name,
-            brand,
-            skuCode,
-            urlKey,
-            visibility: visibility === 'on', // Convert checkbox to boolean
-            category,
-            subCategory,
-            description,
-            linkedProducts,
-            price: {
-                price: parseFloat(price.price),
-                ourPrice: parseFloat(price.ourPrice),
-                ourCutPrice: parseFloat(price.ourCutPrice),
-                ourFullCutPrice: parseFloat(price.ourFullCutPrice),
+        // File upload
+        const categoryImagePath = path.join(uploadDir, `category-${Date.now()}-${categoryImage.name}`);
+        const bannerImagePath = path.join(uploadDir, `banner-${Date.now()}-${bannerImage.name}`);
+        await categoryImage.mv(categoryImagePath);
+        await bannerImage.mv(bannerImagePath);
+
+        // Save category data (mock example)
+        const categoryData = {
+            name: req.body.name,
+            position: req.body.position,
+            discount_line: req.body.discount_line,
+            status: req.body.status === 'true',
+            category_status: req.body.category_status === 'true',
+            visibility: req.body.visibility,
+            description: req.body.description,
+            label: req.body.label,
+            banner: req.body.banner,
+            category_image: `uploads/${path.basename(categoryImagePath)}`,
+            banner_image: `uploads/${path.basename(bannerImagePath)}`,
+            seo: {
+                meta_title: req.body['seo[meta_title]'],
+                meta_description: req.body['seo[meta_description]'],
+                meta_keywords: req.body['seo[meta_keywords]'],
             },
-            images: images // Store image names in the database
-        });
-
-        // Save the product in the database
-        const savedProduct = await newProduct.save();
-
-        return res.status(200).json({
-            success: true,
-            message: 'Product added successfully!',
-            data: savedProduct
-        });
-
+        };
+        const newCategory = new categorymodel(categoryData)
+        let savecate = await newCategory.save();
+        // Save to database (replace with actual DB logic)
+        console.log('Category saved:', savecate);
+        
+        res.json({ success: true, message: 'Category added successfully!' });
     } catch (error) {
-        console.error('Error adding product:', error);
-        return res.status(500).json({ success: false, message: 'Server error', error: error.message });
+        console.error('Error:', error);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 });
+
 
 app.post('/admin/add-subcategory', async (req, res) => {
     try {
-        // Get the form data
-        const { name, description, category, seo } = req.body;
-        
-        if (!name || !category || !seo.meta_title || !seo.meta_description || !seo.meta_keywords) {
-            return res.status(400).json({ success: false, message: 'Missing required fields' });
-        }
-
-        // Handle image upload
-        let imageName = '';
-        if (req.files && req.files.category_image) {
-            const imageFile = req.files.category_image;
-            imageName = Date.now() + '-' + imageFile.name;
-            const uploadPath = path.join(__dirname, '../uploads/subcategories', imageName);
-            await imageFile.mv(uploadPath);
-        }
-
-        // Create a new subcategory
-        const newSubCategory = new SubCategoryModel({
-            name,
-            category,
-            description,
-            image: imageName,
-            seo: {
-                meta_title: seo.meta_title,
-                meta_description: seo.meta_description,
-                meta_keywords: seo.meta_keywords
-            }
-        });
-
-        // Save the subcategory to the database
-        const savedSubCategory = await newSubCategory.save();
-
-        return res.status(200).json({
-            success: true,
-            message: 'SubCategory added successfully!',
-            data: savedSubCategory
-        });
-
+        console.log("yes call")
+      if (!req.body.name || !req.body.category || !req.files?.category_image) {
+        return res.status(400).json({ success: false, message: 'Missing required fields or files.' });
+      }
+  
+      const categoryImage = req.files.category_image;
+      console.log(categoryImage.name ,"name")
+      const imagePath = path.join(uploadDir, `subcategory-${Date.now()}-${categoryImage.name}`);
+      await categoryImage.mv(imagePath);
+  
+      const subCategoryData = {
+        name: req.body.name,
+        category: req.body.category,
+        description: req.body.description,
+        category_image: `uploads/${path.basename(imagePath)}`,
+        seo: {
+          meta_title: req.body['seo[meta_title]'],
+          meta_description: req.body['seo[meta_description]'],
+          meta_keywords: req.body['seo[meta_keywords]'],
+        },
+      };
+  
+      const newSubCategory = new subcategory(subCategoryData);
+      const savedSubCategory = await newSubCategory.save();
+      res.json({ success: true, message: 'SubCategory added successfully!', data: savedSubCategory });
     } catch (error) {
-        console.error('Error adding subcategory:', error);
-        return res.status(500).json({ success: false, message: 'Server error', error: error.message });
+        console.log(error)
+      res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
-});
-
-// const isAuthenticated = (req, res, next) => {
-//     if (req.session && req.session.loggedIn) {
-//         next(); 
-//     } else {
-//         res.redirect('/login');
-//     }
-// };
-
+  });
 
 const apiRouter = require('./routes/apiRouter');
 const adminRouter = require('./routes/adminRouter');
 
-
-// Middleware for authentication (admin routes)
-// app.use((req, res, next) => {
-//     if (!req.path.startsWith('/api')) {
-//         console.log("Admin middleware",req.path);
-//         service.authenticateAdmin(req,res,next)
-//     } else {
-//         next();
-//     }
-// });
 app.use('/api', apiRouter); 
 app.use('/', adminRouter);
 
@@ -328,13 +191,72 @@ app.use(
         type: 'application/x-www-form-urlencoded'
     })
 );
-process.on('unhandledRejection', function(err) {
-    console.log("ERR",err);
+
+
+app.post('/admin/add-product', async (req, res) => {
+    try {
+        // Check if images are uploaded
+        if (!req.files || !req.files.image ) {
+            return res.status(400).json({ success: false, message: 'No images uploaded.' });
+        }
+        console.log(req.body)
+
+                // Handle image upload
+                const image = req.files.image;
+                const imagePath = path.join(uploadDir, `product-${Date.now()}-${image.name}`);
+                await image.mv(imagePath); // Move the image to the directory
+
+            let imagespath = [`uploads/${path.basename(imagePath)}`]
+        // Create the product object from request body
+        const productData = {
+            name: req.body.name,
+            brand: req.body.brand,
+            skuCode: req.body.skuCode,
+            urlKey: req.body.urlKey,
+            visibility: req.body.visibility === 'on', // Convert checkbox value to boolean
+            productLabel: req.body.productLabel,
+            size: req.body.size,
+            productType: req.body.productType,
+            group: req.body.group, // Optional, this can be empty
+            unit: req.body.unit,
+            serialNo: req.body.serialNo,
+            description: req.body.description,
+            metaDescription: {
+                metaTitle: req.body.metaTitle,
+                metaKeywords: req.body.metaKeywords ? req.body.metaKeywords.split(',') : [],
+                metaDescription: req.body.metaDescription
+            },
+            price: {
+                price: req.body.price,
+                ourPrice: req.body.ourPrice,
+                ourCutPrice: req.body.ourCutPrice,
+                ourFullCutPrice: req.body.ourFullCutPrice
+            },
+            images: imagespath, // Store array of image URLs
+            category: req.body.category,
+            subCategory: req.body.subCategory,
+            linkedProducts: {
+                relatedProducts: req.body.linkedProducts_relatedProducts || [],
+                productRequired: req.body.linkedProducts_productRequired || []
+            }
+        };
+
+        // Save product to the database
+        const newProduct = new product(productData);
+        const savedProduct = await newProduct.save();
+
+        // Return success response
+        res.json({ success: true, message: 'Product added successfully!', data: savedProduct });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Error adding product', error: error.message });
+    }
 });
 
-/**
- *	Server bootup section
- **/ 
+
+
+
+
  try {
     // DB Connect
     const dbConnection = mongoose.connect(
